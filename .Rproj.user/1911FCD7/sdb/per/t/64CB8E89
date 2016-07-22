@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "load_attributes <- function(safe) {\n  \n  data <- read.table(safe[[\"annotationfile\"]], header=TRUE,\n                     row.names=1,\n                     comment.char=\"#\", sep=\"\\t\",\n                     na.strings=c(\"NaN\",\"None\"))\n  \n  safe[[\"attributeIds\"]] <- 1:ncol(data)\n  safe[[\"attributeNames\"]] <- colnames(data)\n  \n  # Re-sort the loaded attribute annotation data by node label\n  node2attribute <- data[safe[[\"nodeLabelsSystematic\"]],,drop=FALSE]\n  node2attribute <- as.matrix(node2attribute)\n  \n  # Replace NAs with zeros\n  node2attribute[is.na(node2attribute)] <- 0\n  \n  safe[[\"node2attribute\"]] <- node2attribute\n  \n  # Store some general stats about the attributes & prepare for future analyses\n  safe[[\"attributeSize\"]] <- colSums(data, na.rm=TRUE)\n  safe[[\"attributeLabelNumber\"]] <- nrow(data)\n  safe[[\"attributeIsTop\"]] <- !logical(length=ncol(data))\n  \n  safe\n}",
+    "created" : 1469217101511.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "84798417",
+    "id" : "64CB8E89",
+    "lastKnownWriteTime" : 1469222336,
+    "last_content_update" : 1469222336559,
+    "path" : "~/Laboratory/Utils/R/Networks/safe/io/load_attributes.R",
+    "project_path" : "io/load_attributes.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

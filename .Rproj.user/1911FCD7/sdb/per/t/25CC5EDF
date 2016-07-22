@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "load_settings <- function(path_to_results_folder) {\n  \n  library(ini)\n  \n  inifilepath <- paste(path_to_results_folder, \"safe.ini\", sep=\"\")\n  settings = read.ini(inifilepath)\n  \n  # Get rid of section names\n  safe <- list()\n  sections = names(settings)\n  for (i in 1:length(sections)) {\n    safe <- c(safe, settings[[i]])\n  }\n  \n  # Backwards compatibility\n  params <- names(safe)\n  \n  if (!(\"layoutAlgorithm\" %in% params)) {\n    safe <- c(safe, layoutAlgorithm=\"\")\n  }\n  \n  if (!(\"neighborhoodRadiusType\" %in% params)) {\n    safe <- c(safe, neighborhoodRadiusType=\"percentile\")\n  }\n  \n  if (!(\"unimodality\" %in% params)) {\n    safe <- c(safe, unimodality=1)\n    if (safe[[\"unimodalityType\"]]==\"\") {\n      safe[[\"unimodality\"]] <- 0\n    }\n  }\n  \n  if (!(\"groupDistance\" %in% params)) {\n    safe <- c(safe, groupDistance=1)\n    if (safe[[\"groupDistanceType\"]]==\"\") {\n      safe[[\"groupDistanceType\"]] <- 0\n    }\n  }\n  \n  if (!(\"plotNetwork\" %in% params)) {\n    safe <- c(safe, plotNetwork=1)\n  }\n  \n  \n  # Cross-checks and adjustments\n  \n  safe[[\"neighborhoodRadius\"]] <- as.numeric(safe[[\"neighborhoodRadius\"]])/100\n  safe[[\"MAX_LOG10_PVAL\"]] <- as.numeric(safe[[\"MAX_LOG10_PVAL\"]])\n  safe[[\"THRESHOLD_ENRICHMENT\"]] <- as.numeric(safe[[\"THRESHOLD_ENRICHMENT\"]])\n  \n  if (!(safe[[\"annotationsign\"]] %in% c(\"both\", \"highest\", \"lowest\"))) {\n    safe[[\"annotationsign\"]] <- \"highest\"\n    warning(\"Unknown value for parameter \\\"annotationsign\\\". Setting the parameter to default value: \\\"highest\\\". See safe.ini for available options.\")\n  }\n  \n  if (!(safe[[\"neighborhoodRadiusType\"]] %in% c(\"percentile\",\"absolute\",\"diameter\"))) {\n    safe[[\"neighborhoodRadiusType\"]] <- \"percentile\"\n    warning(\"Unknown value for parameter \\\"neighborhoodRadiusType\\\". Setting the parameter to default value: \\\"percentile\\\". See safe.ini for available options.\")\n  }\n  \n  safe\n  \n}",
+    "created" : 1469204104538.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2435521775",
+    "id" : "25CC5EDF",
+    "lastKnownWriteTime" : 1469227853,
+    "last_content_update" : 1469227853443,
+    "path" : "~/Laboratory/Utils/R/Networks/safe/io/load_settings.R",
+    "project_path" : "io/load_settings.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
