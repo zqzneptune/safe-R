@@ -1,19 +1,29 @@
 compute_node_distances <- function(safe) {
   
-  if (safe[["nodeDistanceType"]] == "shortpath_weighted_layout") {
+  if (safe[["modality"]] == "default") {
     
-    # First, compute the Euclidean distance between all nodes. These will be used as weights on the edges.
-    x <- cbind(safe[["nodeX"]], safe[["nodeY"]])
-    euclid <- as.matrix(dist(x, method="euclidean"))
-    euclid[safe[["edges"]]==0] <- 0
+    print("Loading the pre-calculated node distances for the default network...")
+    load("~/Laboratory/Utils/R/Networks/safe/data/layout_Costanzo2010_150831_nodeDistance.RData")
+    safe[["nodeDistance"]] <- nodeDistance
     
-    # Then, compute all shortest path lengths
-    library(igraph)
-    g <- graph_from_adjacency_matrix(euclid, mode = c("undirected"), weighted = TRUE)
-    safe[["nodeDistance"]] <- distances(g)
+  } else {
     
+    if (safe[["nodeDistanceType"]] == "shortpath_weighted_layout") {
+      
+      print("Calculating node distances...")
+      
+      # First, compute the Euclidean distance between all nodes. These will be used as weights on the edges.
+      x <- cbind(safe[["nodeX"]], safe[["nodeY"]])
+      euclid <- as.matrix(dist(x, method="euclidean"))
+      euclid[safe[["edges"]]==0] <- 0
+      
+      # Then, compute all shortest path lengths
+      library(igraph)
+      g <- graph_from_adjacency_matrix(euclid, mode = c("undirected"), weighted = TRUE)
+      safe[["nodeDistance"]] <- distances(g)
+      
+    }
   }
-  
   # Output
   safe
 }

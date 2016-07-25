@@ -1,18 +1,17 @@
-load_settings <- function(path_to_results_folder) {
+load_settings <- function(path_to_settings_file) {
   
   library(ini)
   
-  inifilepath <- paste(path_to_results_folder, "safe.ini", sep="")
-  settings = read.ini(inifilepath)
+  settings = read.ini(path_to_settings_file)
   
-  # Get rid of section names
+  # Get rid of section names ----------
   safe <- list()
   sections = names(settings)
   for (i in 1:length(sections)) {
     safe <- c(safe, settings[[i]])
   }
   
-  # Backwards compatibility
+  # Backwards compatibility ----------
   params <- names(safe)
   
   if (!("layoutAlgorithm" %in% params)) {
@@ -42,7 +41,7 @@ load_settings <- function(path_to_results_folder) {
   }
   
   
-  # Cross-checks and adjustments
+  # Cross-checks and adjustments ----------
   
   safe[["neighborhoodRadius"]] <- as.numeric(safe[["neighborhoodRadius"]])/100
   safe[["MAX_LOG10_PVAL"]] <- as.numeric(safe[["MAX_LOG10_PVAL"]])

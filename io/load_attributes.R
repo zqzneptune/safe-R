@@ -18,7 +18,9 @@ load_attributes <- function(safe) {
   safe[["node2attribute"]] <- node2attribute
   
   # Store some general stats about the attributes & prepare for future analyses
-  safe[["attributeSize"]] <- colSums(data, na.rm=TRUE)
+  safe[["numNodesPerAttribute"]] <- colSums(node2attribute, na.rm = TRUE)
+  
+  safe[["attributeSize"]] <- colSums(data, na.rm = TRUE)
   safe[["attributeLabelNumber"]] <- nrow(data)
   safe[["attributeIsTop"]] <- !logical(length=ncol(data))
   

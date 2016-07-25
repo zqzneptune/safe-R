@@ -43,22 +43,23 @@ compute_enrichments <- function(safe) {
   nPermutations <- 1000
   Sr <- array(data = NA, dim = c(NLBL, NGRP, nPermutations))
   
-  for (r in 1:nPermutations) {
-    ixPerm <- sample(NLBL, size = NLBL, replace = FALSE)
-    Wr <- safe[["node2attribute"]][ixPerm,]
-    Sr[,,r] <- safe[["neighborhoods"]] %*% Wr
-  }
-  
   if (safe[["annotationsign"]] == "both") {
     safe[["pval"]] <- array(data = NA, dim = c(NLBL, NGRP, 2))
   } else {
     safe[["pval"]] <- matrix(data = NA, nrow = NLBL, ncol = NGRP)
   }
+    
+    for (r in 1:nPermutations) {
+      ixPerm <- sample(NLBL, size = NLBL, replace = FALSE)
+      Wr <- safe[["node2attribute"]][ixPerm,]
+      Sr[,,r] <- safe[["neighborhoods"]] %*% Wr
+    }
   
+
   for (grp in 1:NGRP) {
     Sm <- rowMeans(Sr[,grp,], na.rm = TRUE)
     Ss <- apply(Sr[,grp,], 1, sd, na.rm = TRUE)
-    Z <- (Nig[,grp] - Sm) / Ss
+    # Z <- (Nig[,grp] - Sm) / Ss
     
     if (safe[["annotationsign"]] == "highest") {
       safe[["pval"]][,grp] <- pnorm(Nig[,grp], mean = Sm, sd = Ss, lower.tail = FALSE, log.p = FALSE)
@@ -68,12 +69,12 @@ compute_enrichments <- function(safe) {
       t1 <- pnorm(Nig[,grp], mean = Sm, sd = Ss, lower.tail = FALSE, log.p = FALSE)
       t2 <- pnorm(Nig[,grp], mean = Sm, sd = Ss, lower.tail = TRUE, log.p = FALSE)
       safe[["pval"]][,grp,1] <- t1
-      safe[["pval"]][,grp,1] <- t2
+      safe[["pval"]][,grp,2] <- t2
     }
     
   }
   
-  # Final adjustments ---------------------------
+  # Final steps ---------------------------
   
   safe[["opacity"]] <- -log10(safe[["pval"]])
   
@@ -82,9 +83,17 @@ compute_enrichments <- function(safe) {
   safe[["opacity"]] <- safe[["opacity"]] / m
   
   # Calculate the minimum opacity corresponding to significant enrichment (after Bonferroni multiple testing correction)
-  
   safe[["thresholdOpacity"]] <- -log10(safe[["THRESHOLD_ENRICHMENT"]]/length(safe[["attributeIds"]]))/safe[["MAX_LOG10_PVAL"]]
   
+  # Binarize the opacity
   safe[["opacity_01"]] <- safe[["opacity"]] > safe[["thresholdOpacity"]]
+  
+  # Calculate the size of each attribute's enrichment landscape
+  safe[["numNodesEnrichedPerAttribute"]] <- apply(safe[["opacity_01"]], c(2, 3), sum, na.rm = TRUE)
+  
+  # Calculate the number of attributes each node is enriched for
+  safe[["numAttributesEnrichedPerNode"]] <- apply(safe[["opacity_01"]], c(1, 3), sum, na.rm = TRUE)
+  
+  safe
   
 }
