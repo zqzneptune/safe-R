@@ -3,7 +3,7 @@ compute_node_distances <- function(safe) {
   if (safe[["modality"]] == "default") {
     
     print("Loading the pre-calculated node distances for the default network...")
-    load("~/Laboratory/Utils/R/Networks/safe/data/layout_Costanzo2010_150831_nodeDistance.RData")
+    load("data/layout_Costanzo2010_150831_nodeDistance.RData")
     safe[["nodeDistance"]] <- nodeDistance
     
   } else {
@@ -24,6 +24,8 @@ compute_node_distances <- function(safe) {
       
     }
   }
+  
   # Output
   safe
+  
 }

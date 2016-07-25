@@ -1,7 +1,9 @@
 load_attributes <- function(safe) {
   
+  print("Loading the attribute file...")
+  
   data <- read.table(safe[["annotationfile"]], header=TRUE,
-                     row.names=1,
+                     row.names = 1,
                      comment.char="#", sep="\t",
                      na.strings=c("NaN","None"))
   

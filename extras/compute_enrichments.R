@@ -1,5 +1,7 @@
 compute_enrichments <- function(safe) {
   
+  print("Calculating enrichments...")
+  
   # Define neighborhood radius ---------------------------
   
   if (safe[["neighborhoodRadiusType"]] == "percentile") {
@@ -41,21 +43,33 @@ compute_enrichments <- function(safe) {
   # Run the quantative schema ---------------------------
   
   nPermutations <- 1000
-  Sr <- array(data = NA, dim = c(NLBL, NGRP, nPermutations))
   
   if (safe[["annotationsign"]] == "both") {
     safe[["pval"]] <- array(data = NA, dim = c(NLBL, NGRP, 2))
   } else {
     safe[["pval"]] <- matrix(data = NA, nrow = NLBL, ncol = NGRP)
   }
+  
+  if (NGRP == 1) {
+    
+    # Faster solution for the case with only 1 attribute
+    Attr <- array(data = rep(safe[["node2attribute"]], times = nPermutations), dim = c(NLBL, nPermutations))
+    Attr <- apply(Attr, 2, sample)
+    Sr <- safe[["neighborhoods"]] %*% Attr
+    Sr <- array(data = Sr, dim = c(NLBL, 1, nPermutations))
+    
+  } else {
+    
+    Sr <- array(data = NA, dim = c(NLBL, NGRP, nPermutations))
     
     for (r in 1:nPermutations) {
       ixPerm <- sample(NLBL, size = NLBL, replace = FALSE)
       Wr <- safe[["node2attribute"]][ixPerm,]
       Sr[,,r] <- safe[["neighborhoods"]] %*% Wr
     }
+    
+  }
   
-
   for (grp in 1:NGRP) {
     Sm <- rowMeans(Sr[,grp,], na.rm = TRUE)
     Ss <- apply(Sr[,grp,], 1, sd, na.rm = TRUE)
@@ -94,6 +108,7 @@ compute_enrichments <- function(safe) {
   # Calculate the number of attributes each node is enriched for
   safe[["numAttributesEnrichedPerNode"]] <- apply(safe[["opacity_01"]], c(1, 3), sum, na.rm = TRUE)
   
+  # Output
   safe
   
 }
