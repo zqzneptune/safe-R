@@ -1,20 +1,20 @@
-load_network <- function(safe) {
+load_network <- function(safe_data) {
   
   # If the input file is not specified, use the default Costanzo et al., 2010 network
-  if (is.null(safe[["networkfile"]])) {
+  if (is.null(safe_data[["networkfile"]])) {
     
     print("Loading the genetic interaction similarity network (Costanzo~Boone, 2010)...")
     
-    load("data/layout_Costanzo2010_150831.RData")
+    load("safe/data/layout_Costanzo2010_150831.RData")
     
     fields <- names(costanzo2010)
     for (i in 1:length(fields)) {
-      safe[[fields[[i]]]] <- costanzo2010[[fields[[i]]]]
+      safe_data[[fields[[i]]]] <- costanzo2010[[fields[[i]]]]
     }
     
   }
-  
-  # Output
-  safe
+ 
+  safe_data
   
 }
+

@@ -1,9 +1,9 @@
-plot_network <- function(safe) {
+plot_network <- function(safe_data) {
   
   library(igraph)
 
-  g <- graph_from_adjacency_matrix(safe[["edges"]], mode=c("undirected"))
-  l <- cbind(safe[["nodeX"]], -safe[["nodeY"]])
+  g <- graph_from_adjacency_matrix(safe_data[["edges"]], mode=c("undirected"))
+  l <- cbind(safe_data[["nodeX"]], -safe_data[["nodeY"]])
   
   par(bg = "black")
   plot(g, 
